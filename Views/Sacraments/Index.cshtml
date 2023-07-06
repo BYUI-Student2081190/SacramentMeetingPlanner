@@ -18,12 +18,6 @@
             <th>
                 @Html.DisplayNameFor(model => model.Date)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.People)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Hymn)
-            </th>
             <th></th>
         </tr>
     </thead>
@@ -35,12 +29,6 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Date)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.People.OpeningPrayer)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Hymn.HymnId)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.SacramentId">Edit</a> |

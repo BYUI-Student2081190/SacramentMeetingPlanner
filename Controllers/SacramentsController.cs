@@ -22,7 +22,7 @@ namespace SacramentMeetingPlanner.Controllers
         // GET: Sacraments
         public async Task<IActionResult> Index()
         {
-            var sacramentContext = _context.Sacraments.Include(s => s.Hymn).Include(s => s.People);
+            var sacramentContext = _context.Sacraments.Include(s => s.Hymn).Include(s => s.People).Include(s => s.Speakers);
             return View(await sacramentContext.ToListAsync());
         }
 
@@ -51,6 +51,7 @@ namespace SacramentMeetingPlanner.Controllers
         {
             ViewData["HymnId"] = new SelectList(_context.Hymns, "HymnId", "HymnId");
             ViewData["PeopleId"] = new SelectList(_context.Peoples, "PeopleId", "PeopleId");
+            ViewData["SpeakerId"] = new SelectList(_context.Peoples, "SpeakerId", "SpeakerId");
             return View();
         }
 

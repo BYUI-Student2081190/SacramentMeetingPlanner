@@ -9,6 +9,8 @@ namespace SacramentMeetingPlanner.Models
         // Foreign Keys.
         public int PeopleId { get; set; }
 
+        public int SpeakerId { get; set; }
+
         public int HymnId { get; set; }
 
         // Things specific to the meeting.
@@ -32,6 +34,6 @@ namespace SacramentMeetingPlanner.Models
 
         public Hymn Hymn { get; set; }
 
-        public ICollection<Speaker>? Speakers { get; set; }
+        public List<Speaker>? Speakers { get; set; }
     }
 }
