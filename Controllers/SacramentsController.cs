@@ -51,7 +51,7 @@ namespace SacramentMeetingPlanner.Controllers
         {
             ViewData["HymnId"] = new SelectList(_context.Hymns, "HymnId", "HymnId");
             ViewData["PeopleId"] = new SelectList(_context.Peoples, "PeopleId", "PeopleId");
-            ViewData["SpeakerId"] = new SelectList(_context.Peoples, "SpeakerId", "SpeakerId");
+            ViewData["SpeakerId"] = new SelectList(_context.Speakers, "SpeakerId", "SpeakerId");
             return View();
         }
 
