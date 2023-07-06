@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SacramentMeetingPlanner.Data;
 
@@ -11,9 +12,11 @@ using SacramentMeetingPlanner.Data;
 namespace SacramentMeetingPlanner.Migrations
 {
     [DbContext(typeof(SacramentContext))]
-    partial class SacramentContextModelSnapshot : ModelSnapshot
+    [Migration("20230706163341_Ward")]
+    partial class Ward
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -132,7 +135,7 @@ namespace SacramentMeetingPlanner.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SpeakerId"));
 
-                    b.Property<int>("SacramentId")
+                    b.Property<int>("PeopleId")
                         .HasColumnType("int");
 
                     b.Property<string>("SpeakerName")
@@ -152,7 +155,7 @@ namespace SacramentMeetingPlanner.Migrations
 
                     b.HasKey("SpeakerId");
 
-                    b.HasIndex("SacramentId");
+                    b.HasIndex("PeopleId");
 
                     b.ToTable("Speaker", (string)null);
                 });
@@ -178,16 +181,16 @@ namespace SacramentMeetingPlanner.Migrations
 
             modelBuilder.Entity("SacramentMeetingPlanner.Models.Speaker", b =>
                 {
-                    b.HasOne("SacramentMeetingPlanner.Models.Sacrament", "Sacrament")
+                    b.HasOne("SacramentMeetingPlanner.Models.People", "People")
                         .WithMany("Speakers")
-                        .HasForeignKey("SacramentId")
+                        .HasForeignKey("PeopleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Sacrament");
+                    b.Navigation("People");
                 });
 
-            modelBuilder.Entity("SacramentMeetingPlanner.Models.Sacrament", b =>
+            modelBuilder.Entity("SacramentMeetingPlanner.Models.People", b =>
                 {
                     b.Navigation("Speakers");
                 });

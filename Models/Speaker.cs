@@ -1,4 +1,6 @@
-﻿namespace SacramentMeetingPlanner.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace SacramentMeetingPlanner.Models
 {
     public class Speaker
     {
@@ -7,19 +9,28 @@
         public int SpeakerId { get; set; }
 
         // Foreign Key.
-        public int PeopleId { get; set; }
+        public int SacramentId { get; set; }
 
         // Information on Speaker.
         // Make SpeakerType a dropdown in view, that way
-        // it will make sense to the user. 
+        // it will make sense to the user.
+        [StringLength(50)]
+        [RegularExpression(@"^[A-Z]+[a-zA-Z]*$")]
+        [Display(Name = "Type of Speaker")]
         public string SpeakerType { get; set; }
 
+        [StringLength(50)]
+        [RegularExpression(@"^[A-Z]+[a-zA-Z]*$")]
+        [Display(Name = "Speaker Name")]
         public string SpeakerName { get; set; }
 
+        [StringLength(50)]
+        [RegularExpression(@"^[A-Z]+[a-zA-Z]*$")]
+        [Display(Name = "Speaker Topic")]
         public string SpeakerTopic { get; set; }
 
         // Navigation.
-        public People People { get; set; }
+        public Sacrament Sacrament { get; set; }
 
     }
 }

@@ -24,7 +24,7 @@ namespace SacramentMeetingPlanner.Data
                 // Create the seed data in the tables.
 
                 // TestSacrament Data.
-                Sacrament testSacrament = new Sacrament { HymnId = 1, PeopleId = 1, Topic = "Beta", Date = DateTime.Parse("2001-01-01") };
+                Sacrament testSacrament = new Sacrament { HymnId = 1, PeopleId = 1, Topic = "Beta", Date = DateTime.Parse("2001-01-01"), Ward = "Beta 2nd Ward" };
 
                 // Add Changes.
                 context.Sacraments.Add(testSacrament);
@@ -38,9 +38,9 @@ namespace SacramentMeetingPlanner.Data
                 // TestSpeaker Data.
                 var speakers = new Speaker[]
                 {
-                new Speaker{PeopleId = 1, SpeakerType = "Youth Speaker", SpeakerName = "Sister Beta", SpeakerTopic = "Beta"},
-                new Speaker{PeopleId = 1, SpeakerType = "Speaker", SpeakerName = "Brother Alpha", SpeakerTopic = "Beta"},
-                new Speaker{PeopleId = 1, SpeakerType = "Speaker", SpeakerName = "Sister Alpha", SpeakerTopic = "Beta"}
+                new Speaker{SacramentId = 1, SpeakerType = "Youth Speaker", SpeakerName = "Sister Beta", SpeakerTopic = "Beta"},
+                new Speaker{SacramentId = 1, SpeakerType = "Speaker", SpeakerName = "Brother Alpha", SpeakerTopic = "Beta"},
+                new Speaker{SacramentId = 1, SpeakerType = "Speaker", SpeakerName = "Sister Alpha", SpeakerTopic = "Beta"}
                 };
 
                 // Add Changes.
