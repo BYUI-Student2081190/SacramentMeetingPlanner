@@ -17,6 +17,7 @@ namespace SacramentMeetingPlanner.Models
         [Display(Name = "Event Name")]
         public string EventName { get; set; } = "";
 
+        [Required]
         [StringLength(100)]
         [Display(Name = "Event Info")]
         public string? EventInfo { get; set; }

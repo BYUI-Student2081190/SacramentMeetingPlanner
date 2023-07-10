@@ -148,7 +148,16 @@ namespace SacramentMeetingPlanner.Controllers
             var meeting = await _context.Meetings.FindAsync(id);
             if (meeting != null)
             {
+                // Delete all the activites in the meeting.
+                foreach (Activity a in _context.Activities) 
+                {
+                    if(a.MeetingID == meeting.Id) 
+                    {
+                        _context.Activities.Remove(a);
+                    }
+                }
                 _context.Meetings.Remove(meeting);
+
             }
             
             await _context.SaveChangesAsync();
