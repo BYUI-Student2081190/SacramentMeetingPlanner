@@ -19,6 +19,10 @@ namespace SacramentMeetingPlanner.Models
         [Display(Name = "Meeting Date")]
         public DateTime Date { get; set; }
 
+        [StringLength(300)]
+        [Display(Name = "Address")]
+        public string? Address { get; set; }
+
         // OPTIONAL MEETING TYPE
         // public int Type { get; set; }
     }

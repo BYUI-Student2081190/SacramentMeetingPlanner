@@ -42,6 +42,7 @@
                     <option value="Testimonies"></option>
                 </select>
                 <span asp-validation-for="EventName" class="text-danger"></span>
+                <p class="text-danger">@ViewData["ErrorMessage"]</p>
             </div>
             <div class="form-group">
                 <label asp-for="EventInfo" class="control-label"></label>

@@ -14,8 +14,34 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
             <div class="form-group">
+                <label class="control-label">Ward</label>
+                <select class="form-control" asp-items="ViewBag.MeetingsID" name="selectedMeeting"></select>
+                <span class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <label asp-for="EventName" class="control-label"></label>
-                <input asp-for="EventName" class="form-control" />
+                <select asp-for="EventName" class="form-control">
+                    <!--These are all people events that should only happen once in a meeting-->
+                    <option value="Presiding">Presiding</option>
+                    <option value="Conducting">Conducting</option>
+                    <option value="Invocation">Invocation</option>
+                    <option value="Benediction">Benediction</option>
+                    <!--These are all the people events that can happen multiple times or never happen in a meeting-->
+                    <option value="Speaker">Speaker</option>
+                    <option value="Youth Speaker">Youth Speaker</option>
+                    <option value="Article of Faith">Article of Faith</option>
+                    <!--These are the Hymn Events that should only happen once in a meeting-->
+                    <option value="Opening Hymn">Opening Hymn</option>
+                    <option value="Sacrament Hymn">Sacrament Hymn</option>
+                    <option value="Closing Hymn">Closing Hymn</option>
+                    <!--These are optional Song Events that should only happen once-->
+                    <option value="Intermediate Hymn">Intermediate Hymn</option>
+                    <option value="Musical Number">Musical Number</option>
+                    <!--These are Events that should only happen once in the meeting-->
+                    <option value="Passing of the Sacrament">Passing of the Sacrament</option>
+                    <option value="Ward Buisness">Ward Buisness</option>
+                    <option value="Testimonies"></option>
+                </select>
                 <span asp-validation-for="EventName" class="text-danger"></span>
             </div>
             <div class="form-group">

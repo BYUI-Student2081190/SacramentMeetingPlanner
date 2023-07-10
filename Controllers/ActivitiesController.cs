@@ -82,17 +82,35 @@ namespace SacramentMeetingPlanner.Controllers
         public async Task<IActionResult> Create([Bind("Id,EventName,EventInfo,EventFooter")] Activity activity, int selectedMeeting)
         {
             // Custom Valid check, if falied it returns to the activity.
+            bool testResult = ValidateActivity(activity, selectedMeeting);
+
+            if (testResult == true) 
+            {
+                PopulateMeetingsDropDownList();
+
+                // Returns true return to the view with error message.
+                ViewData["ErrorMessage"] = "You already have this Activity in that meeting.";
+
+                return View(activity);
+            }
+
             if (ModelState.IsValid)
             {
+                // Set the values.
+                activity.MeetingID = selectedMeeting;
+
+                // Set the order based on a dictonary.
+                activity.Order = _activitiesOrder[activity.EventName];
+
                 _context.Add(activity);
                 await _context.SaveChangesAsync();
-
-                // Now bind the Meeting to the Activity.
-                //BindActivityToMeeting(activity, selectedMeeting);
 
                 // Then return to the index.
                 return RedirectToAction(nameof(Index));
             }
+
+            PopulateMeetingsDropDownList();
+
             return View(activity);
         }
 
@@ -109,6 +127,9 @@ namespace SacramentMeetingPlanner.Controllers
             {
                 return NotFound();
             }
+
+            // Populate Dropdown.
+            PopulateMeetingsDropDownList();
             return View(activity);
         }
 
@@ -117,17 +138,36 @@ namespace SacramentMeetingPlanner.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,EventName,EventInfo,EventFooter")] Activity activity)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,EventName,EventInfo,EventFooter")] Activity activity, int selectedMeeting)
         {
             if (id != activity.Id)
             {
                 return NotFound();
             }
 
+            // Custom Valid check, if falied it returns to the activity.
+            bool testResult = ValidateActivity(activity, selectedMeeting);
+            if (testResult == true)
+            {
+                PopulateMeetingsDropDownList();
+
+                // Returns true return to the view with error message.
+                ViewData["ErrorMessage"] = "You already have this Activity in that meeting.";
+
+                return View(activity);
+            }
+
             if (ModelState.IsValid)
             {
                 try
                 {
+                    // Update info.
+                    // Set the values.
+                    activity.MeetingID = selectedMeeting;
+
+                    // Set the order based on a dictonary.
+                    activity.Order = _activitiesOrder[activity.EventName];
+
                     _context.Update(activity);
                     await _context.SaveChangesAsync();
                 }
@@ -144,6 +184,9 @@ namespace SacramentMeetingPlanner.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+
+            PopulateMeetingsDropDownList();
+
             return View(activity);
         }
 
@@ -198,27 +241,26 @@ namespace SacramentMeetingPlanner.Controllers
             ViewBag.MeetingsID = new SelectList(meetingsQuery.AsNoTracking(), "Id", "WardName", selectedDepartment);
         }
 
-        // BIND: Bind the Activity to the Meeting using MeetingProgram.
-        //private async void BindActivityToMeeting(Activity activity, int selectedMeeting) 
-        //{
-        //    // Create new object.
-        //    var meetingProgram = new MeetingProgram();
-
-        //    // Now Set the id values to equal their respected values.
-        //    meetingProgram.MeetingID = selectedMeeting;
-        //    meetingProgram.ActivityID = activity.Id;
-
-        //    // Set the order based on a dictonary.
-        //    string eventName = activity.EventName;
-        //    meetingProgram.Order = _activitiesOrder[eventName];
-
-        //    // Now add to the DB.
-        //    _context.MeetingPrograms.Add(meetingProgram);
-        //    await _context.SaveChangesAsync();
-        //}
-
         // VALIDATE: Custom validation for the Create/Edit pages. This checks to see if we have duplicate activites in one
         // meeting.
+        private bool ValidateActivity(Activity activity, int meetingId) 
+        {
+            if (activity.EventName != "Speaker" || activity.EventName != "Youth Speaker" || activity.EventName != "Article of Faith")
+            {
 
+                // Test the Activity to see if others aready exsist in the DB in the same meeting.
+                foreach (Activity a in _context.Activities)
+                {
+
+                    if (a.MeetingID == meetingId && a.EventName == activity.EventName)
+                    {
+                        return true;
+                    }
+
+                }
+            }
+            // If all checks out return false.
+            return false;
+        }
     }
 }
