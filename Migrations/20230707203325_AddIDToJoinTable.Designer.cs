@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SacramentMeetingPlanner.Data;
 
@@ -11,9 +12,11 @@ using SacramentMeetingPlanner.Data;
 namespace SacramentMeetingPlanner.Migrations
 {
     [DbContext(typeof(ProgramContext))]
-    partial class SacramentContextModelSnapshot : ModelSnapshot
+    [Migration("20230707203325_AddIDToJoinTable")]
+    partial class AddIDToJoinTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -43,12 +46,6 @@ namespace SacramentMeetingPlanner.Migrations
                         .HasMaxLength(150)
                         .HasColumnType("nvarchar(150)");
 
-                    b.Property<int>("MeetingID")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Order")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.ToTable("Activities");
@@ -73,6 +70,51 @@ namespace SacramentMeetingPlanner.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Meetings");
+                });
+
+            modelBuilder.Entity("SacramentMeetingPlanner.Models.MeetingProgram", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ActivityID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MeetingID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ActivityID");
+
+                    b.HasIndex("MeetingID");
+
+                    b.ToTable("MeetingPrograms");
+                });
+
+            modelBuilder.Entity("SacramentMeetingPlanner.Models.MeetingProgram", b =>
+                {
+                    b.HasOne("SacramentMeetingPlanner.Models.Activity", "Activity")
+                        .WithMany()
+                        .HasForeignKey("ActivityID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SacramentMeetingPlanner.Models.Meeting", "Meeting")
+                        .WithMany()
+                        .HasForeignKey("MeetingID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Activity");
+
+                    b.Navigation("Meeting");
                 });
 #pragma warning restore 612, 618
         }

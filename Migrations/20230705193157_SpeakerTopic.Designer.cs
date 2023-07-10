@@ -11,7 +11,7 @@ using SacramentMeetingPlanner.Data;
 
 namespace SacramentMeetingPlanner.Migrations
 {
-    [DbContext(typeof(SacramentContext))]
+    [DbContext(typeof(ProgramContext))]
     [Migration("20230705193157_SpeakerTopic")]
     partial class SpeakerTopic
     {

@@ -6,17 +6,17 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-builder.Services.AddDbContext<SacramentContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.")));
+builder.Services.AddDbContext<ProgramContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.")));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 var app = builder.Build();
 
-using (var scope = app.Services.CreateScope())
-{
-    var services = scope.ServiceProvider;
+//using (var scope = app.Services.CreateScope())
+//{
+//    var services = scope.ServiceProvider;
 
-    DbInitializer.Initialize(services);
-}
+//    DbInitializer.Initialize(services);
+//}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

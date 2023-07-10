@@ -12,8 +12,8 @@ using SacramentMeetingPlanner.Data;
 namespace SacramentMeetingPlanner.Migrations
 {
     [DbContext(typeof(ProgramContext))]
-    [Migration("20230706171158_Update")]
-    partial class Update
+    [Migration("20230707043713_FixedPerformer")]
+    partial class FixedPerformer
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -42,7 +42,7 @@ namespace SacramentMeetingPlanner.Migrations
                     b.Property<int>("OpeningHymn")
                         .HasColumnType("int");
 
-                    b.Property<string>("Preformer")
+                    b.Property<string>("Performer")
                         .HasMaxLength(150)
                         .HasColumnType("nvarchar(150)");
 
@@ -106,6 +106,9 @@ namespace SacramentMeetingPlanner.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("PeopleId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SpeakerId")
                         .HasColumnType("int");
 
                     b.Property<string>("Topic")

@@ -18,11 +18,6 @@ namespace SacramentMeetingPlanner.Controllers
             return View();
         }
 
-        public IActionResult Help()
-        {
-            return View();
-        }
-
         public IActionResult Privacy()
         {
             return View();
@@ -31,7 +26,7 @@ namespace SacramentMeetingPlanner.Controllers
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            return base.View(new ErrorViewModel { RequestId = System.Diagnostics.Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }
 }
