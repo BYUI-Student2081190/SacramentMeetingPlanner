@@ -20,6 +20,15 @@
         <h3>@ViewData["MeetingAddress"]</h3>
     </div>
     <div class="meetingBody">
-
+        @foreach (string activity in ViewBag.PrintList)
+        {
+            // Create divs to hold the h3 elements.
+            // Create a new h3 element per object in bag.
+            @:<div>
+                @:<h3>
+                    @activity
+                @:</h3>
+            @:</div>
+        }
     </div>
 </div>

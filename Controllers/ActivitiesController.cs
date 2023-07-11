@@ -174,7 +174,7 @@ namespace SacramentMeetingPlanner.Controllers
             }
 
             // Custom Valid check, if falied it returns to the activity.
-            bool testResult = ValidateActivity(activity, selectedMeeting);
+            bool testResult = ValidateActivity(activity, selectedMeeting, id);
 
             if (testResult == true)
             {
@@ -303,12 +303,32 @@ namespace SacramentMeetingPlanner.Controllers
 
         // VALIDATE: Custom validation for the Create/Edit pages. This checks to see if we have duplicate activites in one
         // meeting.
-        private bool ValidateActivity(Activity activity, int meetingId) 
+        private bool ValidateActivity(Activity activity, int meetingId, int? id = null) 
         {
             // First test, check to see if this is not a speaker.
             if (activity.EventName != "Speaker" && activity.EventName != "Youth Speaker" && activity.EventName != "Article of Faith")
             {
+                // Test to see if an id is passed in by Edit.
+                if (id != null) 
+                {
+                    // Test the relationship, is this trying to edit the same thing? Or become something new that already exsists.
+                    int countActivity = 0;
 
+                    foreach (Activity a in _context.Activities) 
+                    {
+                        if (a.EventName == activity.EventName && a.ActivityID == activity.ActivityID) 
+                        {
+                            countActivity += 1;
+                        }
+                    }
+
+                    // Now test if the activity's are equal if so, return false, if not return true.
+                    if (countActivity == 1) 
+                    {
+                        // Green Thumbs up! Lets go!
+                        return false;
+                    }
+                }
                 // Test the Activity to see if others aready exsist in the DB in the same meeting.
                 foreach (Activity a in _context.Activities)
                 {
@@ -391,6 +411,8 @@ namespace SacramentMeetingPlanner.Controllers
                 }
             }
 
+            meetingActivities = meetingActivities.OrderBy(a => a.Order).ToList();
+
             // Add the title of the meeting.
             ViewData["MeetingWard"] = meeting.WardName;
             if (printMeeting == 0) 
@@ -411,18 +433,152 @@ namespace SacramentMeetingPlanner.Controllers
             foreach (Activity ma in meetingActivities) 
             {
                 // This varible is the character length. This is how long each string entry is going to be.
-                int length = 550;
+                int length = 100;
 
-                // Now test if order is not 8, 9, 10, or 11. These need to be orginized in a special way.
-                if (ma.Order < 8 || ma.Order > 11) 
+                // Now test if order is less than 8. These need to be orginized in a special way.
+                if (ma.Order < 8) 
                 {
                     // Create the padding length.
                     if (ma.EventInfo != null)
                     {
                         int activityStringLen = ma.EventName.Length + ma.EventInfo.Length;
+
+                        // Now generate the padding.
+                        int padding = length - activityStringLen;
+
+                        string stringPad = new string('.', padding);
+
+                        // Now Create Finished String.
+                        string finishedString = (ma.EventName + " " + stringPad + " " + ma.EventInfo);
+
+                        // Put them inside the list.
+                        meetingActivitiesString.Add(finishedString);
+                        if (ma.EventFooter != null)
+                        {
+                            meetingActivitiesString.Add(ma.EventFooter);
+                        }
+                    }
+
+                    // If they are null, have the footer be a combo with the EventName on a new line.
+                    else 
+                    {
+                        // Create a string with the footer.
+                        string finishedString = ($"{ma.EventName}");
+
+                        meetingActivitiesString.Add(finishedString);
+                        if (ma.EventFooter != null)
+                        {
+                            meetingActivitiesString.Add(ma.EventFooter);
+                        }
+                    }
+                }
+                // Test if we have made it to the middle section of the body.
+                else if (ma.Order >= 8 && ma.Order <= 11) 
+                {
+                    // Count how many 8's there are.
+                    int talkCount = meetingActivities.Count(x => x.Order == 8);
+                    // Now divide them by two to get the break point to place the musical number or hymn.
+                    int divide = talkCount / 2;
+
+                    // Count up each time we loop in here.
+                    int countUp = 1;
+
+                    // Create a check to see if we have hit the half way point.
+                    if (countUp == divide) 
+                    {
+                        // Add the activities to the list in their respective formats.
+
+
+                    }
+                    // Check to see if this is a fast sunday by seeing if there is a testimonies section.
+                    // If so, only create one string to add and ignore every other input put into the meeting.
+                    if (meetingActivities.Count(x => x.EventName == "Testimonies") >= 1)
+                    {
+                        // Only add the testimonies section and skip the rest of this stuff.
+                        meetingActivitiesString.Add("Testimonies");
+
+                        //Break this loop.
+                        break;
+                    }
+
+
+                    // Create the padding length.
+                    if (ma.EventInfo != null)
+                    {
+                        
+                        int activityStringLen = ma.EventName.Length + ma.EventInfo.Length;
+
+                        // Now generate the padding.
+                        int padding = length - activityStringLen;
+
+                        string stringPad = new string('.', padding);
+
+                        // Now Create Finished String.
+                        string finishedString = (ma.EventName + " " + stringPad + " " + ma.EventInfo);
+
+                        // Put them inside the list.
+                        meetingActivitiesString.Add(finishedString);
+                        if (ma.EventFooter != null)
+                        {
+                            meetingActivitiesString.Add(ma.EventFooter);
+                        }
+                    }
+
+                    // If they are null, have the footer be a combo with the EventName on a new line.
+                    else
+                    {
+                        // Create a string with the footer.
+                        string finishedString = ($"{ma.EventName}");
+
+                        meetingActivitiesString.Add(finishedString);
+                        if (ma.EventFooter != null)
+                        {
+                            meetingActivitiesString.Add(ma.EventFooter);
+                        }
+                    }
+                    // Add to countUp.
+                    countUp += 1;
+                }
+                else 
+                {
+                    // Create the padding length.
+                    if (ma.EventInfo != null)
+                    {
+                        int activityStringLen = ma.EventName.Length + ma.EventInfo.Length;
+
+                        // Now generate the padding.
+                        int padding = length - activityStringLen;
+
+                        string stringPad = new string('.', padding);
+
+                        // Now Create Finished String.
+                        string finishedString = (ma.EventName + " " + stringPad + " " + ma.EventInfo);
+
+                        // Put them inside the list.
+                        meetingActivitiesString.Add(finishedString);
+
+                        if (ma.EventFooter != null) 
+                        {
+                            meetingActivitiesString.Add(ma.EventFooter);
+                        }
+                    }
+
+                    // If they are null, have the footer be a combo with the EventName on a new line.
+                    else
+                    {
+                        // Create a string with the footer.
+                        string finishedString = ($"{ma.EventName}");
+
+                        meetingActivitiesString.Add(finishedString);
+                        if (ma.EventFooter != null)
+                        {
+                            meetingActivitiesString.Add(ma.EventFooter);
+                        }
                     }
                 }
             }
+            // Add the whole string list to the ViewData.
+            ViewBag.PrintList = meetingActivitiesString;
 
             PopulateMeetingsDropDownList();
             return View();
