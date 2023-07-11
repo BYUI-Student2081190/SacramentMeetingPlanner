@@ -21,26 +21,6 @@ namespace SacramentMeetingPlanner.Controllers
             _context = context;
         }
 
-        // Class dictonary.
-        private Dictionary<string, int> _activitiesOrder = new Dictionary<string, int>() 
-        {
-            {"Presiding", 1},
-            {"Conducting", 2},
-            {"Opening Hymn", 3},
-            {"Invocation", 4},
-            {"Ward Buisness", 5},
-            {"Sacrament Hymn", 6},
-            {"Passing of the Sacrament", 7},
-            {"Speaker", 8},
-            {"Youth Speaker", 8},
-            {"Article of Faith", 8},
-            {"Testimonies", 9},
-            {"Intermediate Hymn", 10},
-            {"Musical Number", 11},
-            {"Closing Hymn", 12},
-            {"Benediction", 13}
-        };
-
         // GET: Activities
         public async Task<IActionResult> Index()
         {
@@ -127,9 +107,6 @@ namespace SacramentMeetingPlanner.Controllers
                 // Set the values.
                 activity.MeetingID = selectedMeeting;
 
-                // Set the order based on a dictonary.
-                activity.Order = _activitiesOrder[activity.EventName];
-
                 _context.Add(activity);
                 await _context.SaveChangesAsync();
 
@@ -204,31 +181,30 @@ namespace SacramentMeetingPlanner.Controllers
 
                 activity.MeetingID = selectedMeeting;
 
-                // Set the order based on a dictonary.
-                if (_activitiesOrder.TryGetValue(activity.EventName, out int output))
-                {
-                    activity.Order = output;
+                    //activity.Order = output;
 
-                    var activityToUpdate = await _context.Activities.FirstOrDefaultAsync(s => s.ActivityID == id);
-                    if (await TryUpdateModelAsync<Activity>(
-                        activityToUpdate,
-                        "",
-                        s => s.EventName, s => s.EventInfo, s => s.EventFooter, s => s.MeetingID, s => s.Order))
+                var activityToUpdate = await _context.Activities.FirstOrDefaultAsync(s => s.ActivityID == id);
+                // Set the meeting to this so they can use it.
+                activityToUpdate.MeetingID = selectedMeeting;
+                if (await TryUpdateModelAsync<Activity>(
+                    activityToUpdate,
+                    "",
+                    s => s.EventName, s => s.EventInfo, s => s.EventFooter, s => s.MeetingID, s => s.Order))
+                {
+                    try
                     {
-                        try
-                        {
-                            await _context.SaveChangesAsync();
-                            return RedirectToAction(nameof(Index));
-                        }
-                        catch (DbUpdateException /* ex */)
-                        {
-                            //Log the error (uncomment ex variable name and write a log.)
-                            ModelState.AddModelError("", "Unable to save changes. " +
-                                "Try again, and if the problem persists, " +
-                                "see your system administrator.");
-                        }
+                        await _context.SaveChangesAsync();
+                        return RedirectToAction(nameof(Index));
+                    }
+                    catch (DbUpdateException /* ex */)
+                    {
+                        //Log the error (uncomment ex variable name and write a log.)
+                        ModelState.AddModelError("", "Unable to save changes. " +
+                            "Try again, and if the problem persists, " +
+                            "see your system administrator.");
                     }
                 }
+                
             }
 
             PopulateMeetingsDropDownList();
@@ -313,17 +289,18 @@ namespace SacramentMeetingPlanner.Controllers
                 {
                     // Test the relationship, is this trying to edit the same thing? Or become something new that already exsists.
                     int countActivity = 0;
-
+                    int thatId = 0;
                     foreach (Activity a in _context.Activities) 
                     {
                         if (a.EventName == activity.EventName) 
                         {
                             countActivity += 1;
+                            thatId = a.ActivityID;
                         }
                     }
 
                     // Now test if the activity's are equal if so, return false, if not return true.
-                    if (countActivity == 0) 
+                    if (countActivity == 1 && thatId == id) 
                     {
                         // Green Thumbs up! Lets go!
                         return false;
@@ -411,6 +388,7 @@ namespace SacramentMeetingPlanner.Controllers
                 }
             }
 
+            //Order the list.
             meetingActivities = meetingActivities.OrderBy(a => a.Order).ToList();
 
             // Add the title of the meeting.
@@ -425,44 +403,9 @@ namespace SacramentMeetingPlanner.Controllers
             }
             ViewData["MeetingAddress"] = meeting.Address;
 
-            // Create the meeting body, with dynamic views.
-            // Convert the list into the strings we need to use.
-            // This will also handle the order in which each thing will appear as well.
-            var meetingActivitiesString = new List<string>();
+            // Save to printList so it can display them in the view.
 
-            foreach (Activity ma in meetingActivities) 
-            {
-                // This varible is the character length. This is how long each string entry is going to be.
-                int length = 100;
-
-                    // Create the padding length.
-                    if (ma.EventInfo != null)
-                    {
-                        int activityStringLen = ma.EventName.Length + ma.EventInfo.Length;
-
-                        // Now generate the padding.
-                        int padding = length - activityStringLen;
-
-                        string stringPad = new string('.', padding);
-
-                        // Now Create Finished String.
-                        string finishedString = (ma.EventName + " " + stringPad + " " + ma.EventInfo + $"\n{ma.EventFooter}");
-
-                        // Put them inside the list.
-                        meetingActivitiesString.Add(finishedString);
-                    }
-
-                    // If they are null, have the footer be a combo with the EventName on a new line.
-                    else 
-                    {
-                        // Create a string with the footer.
-                        string finishedString = ($"{ma.EventName} \n{ma.EventFooter}");
-
-                        meetingActivitiesString.Add(finishedString);
-                    }
-            }
-
-            ViewBag.PrintList = meetingActivitiesString;
+            ViewBag.PrintList = meetingActivities;
 
             PopulateMeetingsDropDownList();
             return View();
