@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SacramentMeetingPlanner.Models
 {
@@ -6,7 +7,7 @@ namespace SacramentMeetingPlanner.Models
     {
 
         // Key.
-        public int Id { get; set; }
+        public int ActivityID { get; set; }
 
         // Foreign Key.
         public int MeetingID { get; set; }
@@ -17,7 +18,6 @@ namespace SacramentMeetingPlanner.Models
         [Display(Name = "Event Name")]
         public string EventName { get; set; } = "";
 
-        [Required]
         [StringLength(100)]
         [Display(Name = "Event Info")]
         public string? EventInfo { get; set; }
@@ -27,7 +27,5 @@ namespace SacramentMeetingPlanner.Models
         public string? EventFooter { get; set; }
 
         public int Order { get; set; }
-
-        //public ICollection<MeetingProgram> MeetingPrograms { get; set; }
     }
 }

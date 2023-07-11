@@ -19,7 +19,7 @@ namespace SacramentMeetingPlanner.Models
         [Display(Name = "Meeting Date")]
         public DateTime Date { get; set; }
 
-        [StringLength(300)]
+        [StringLength(500)]
         [Display(Name = "Address")]
         public string? Address { get; set; }
 

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using NuGet.ProjectModel;
 using SacramentMeetingPlanner.Data;
+using SacramentMeetingPlanner.Migrations;
 using SacramentMeetingPlanner.Models;
 
 namespace SacramentMeetingPlanner.Controllers
@@ -56,11 +57,25 @@ namespace SacramentMeetingPlanner.Controllers
                 return NotFound();
             }
 
-            var activity = await _context.Activities
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var activity = await _context.Activities.AsNoTracking()
+                .FirstOrDefaultAsync(m => m.ActivityID == id);
             if (activity == null)
             {
                 return NotFound();
+            }
+
+            foreach (Meeting m in _context.Meetings) 
+            {
+                if (m.Id == activity.MeetingID)
+                {
+                    ViewData["ViewWard"] = m.WardName;
+                    ViewData["MeetingDate"] = m.Date.ToShortDateString();
+                }
+                else
+                {
+                    ViewData["ViewWard"] = "None";
+                    ViewData["MeetingDate"] = "None";
+                }
             }
 
             return View(activity);
@@ -79,7 +94,7 @@ namespace SacramentMeetingPlanner.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,EventName,EventInfo,EventFooter")] Activity activity, int selectedMeeting)
+        public async Task<IActionResult> Create([Bind("ActivityID,MeetingID,EventName,EventInfo,EventFooter,Order")] Activity activity, int selectedMeeting)
         {
             // Custom Valid check, if falied it returns to the activity.
             bool testResult = ValidateActivity(activity, selectedMeeting);
@@ -90,6 +105,19 @@ namespace SacramentMeetingPlanner.Controllers
 
                 // Returns true return to the view with error message.
                 ViewData["ErrorMessage"] = "You already have this Activity in that meeting.";
+
+                return View(activity);
+            }
+
+            // Second test call.
+            testResult = ValidateActivityInfo(activity);
+
+            if (testResult == false)
+            {
+                PopulateMeetingsDropDownList();
+
+                // Returns true return to the view with error message.
+                ViewData["NullMessage"] = $"You must have this field blank while '{activity.EventName}' is selected.";
 
                 return View(activity);
             }
@@ -138,15 +166,16 @@ namespace SacramentMeetingPlanner.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,EventName,EventInfo,EventFooter")] Activity activity, int selectedMeeting)
+        public async Task<IActionResult> Edit(int id, [Bind("ActivityID,MeetingID,EventName,EventInfo,EventFooter,Order")] Activity activity, int selectedMeeting)
         {
-            if (id != activity.Id)
+            if (id != activity.ActivityID)
             {
                 return NotFound();
             }
 
             // Custom Valid check, if falied it returns to the activity.
             bool testResult = ValidateActivity(activity, selectedMeeting);
+
             if (testResult == true)
             {
                 PopulateMeetingsDropDownList();
@@ -157,32 +186,49 @@ namespace SacramentMeetingPlanner.Controllers
                 return View(activity);
             }
 
+            // Second test call.
+            testResult = ValidateActivityInfo(activity);
+
+            if (testResult == false)
+            {
+                PopulateMeetingsDropDownList();
+
+                // Returns true return to the view with error message.
+                ViewData["NullMessage"] = $"You must have this field blank while '{activity.EventName}' is selected.";
+
+                return View(activity);
+            }
+
             if (ModelState.IsValid)
             {
-                try
-                {
-                    // Update info.
-                    // Set the values.
-                    activity.MeetingID = selectedMeeting;
 
-                    // Set the order based on a dictonary.
-                    activity.Order = _activitiesOrder[activity.EventName];
+                activity.MeetingID = selectedMeeting;
 
-                    _context.Update(activity);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
+                // Set the order based on a dictonary.
+                if (_activitiesOrder.TryGetValue(activity.EventName, out int output))
                 {
-                    if (!ActivityExists(activity.Id))
+                    activity.Order = output;
+
+                    var activityToUpdate = await _context.Activities.FirstOrDefaultAsync(s => s.ActivityID == id);
+                    if (await TryUpdateModelAsync<Activity>(
+                        activityToUpdate,
+                        "",
+                        s => s.EventName, s => s.EventInfo, s => s.EventFooter, s => s.MeetingID, s => s.Order))
                     {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
+                        try
+                        {
+                            await _context.SaveChangesAsync();
+                            return RedirectToAction(nameof(Index));
+                        }
+                        catch (DbUpdateException /* ex */)
+                        {
+                            //Log the error (uncomment ex variable name and write a log.)
+                            ModelState.AddModelError("", "Unable to save changes. " +
+                                "Try again, and if the problem persists, " +
+                                "see your system administrator.");
+                        }
                     }
                 }
-                return RedirectToAction(nameof(Index));
             }
 
             PopulateMeetingsDropDownList();
@@ -199,10 +245,24 @@ namespace SacramentMeetingPlanner.Controllers
             }
 
             var activity = await _context.Activities
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(m => m.ActivityID == id);
             if (activity == null)
             {
                 return NotFound();
+            }
+
+            foreach (Meeting m in _context.Meetings)
+            {
+                if (m.Id == activity.MeetingID)
+                {
+                    ViewData["ViewWard"] = m.WardName;
+                    ViewData["MeetingDate"] = m.Date.ToShortDateString();
+                }
+                else
+                {
+                    ViewData["ViewWard"] = "None";
+                    ViewData["MeetingDate"] = "None";
+                }
             }
 
             return View(activity);
@@ -229,11 +289,11 @@ namespace SacramentMeetingPlanner.Controllers
 
         private bool ActivityExists(int id)
         {
-          return (_context.Activities?.Any(e => e.Id == id)).GetValueOrDefault();
+          return (_context.Activities?.Any(e => e.ActivityID == id)).GetValueOrDefault();
         }
 
         // LOAD: Department info for the drop-down list.
-        private void PopulateMeetingsDropDownList(object selectedDepartment = null)
+        private void PopulateMeetingsDropDownList(object? selectedDepartment = null)
         {
             var meetingsQuery = from m in _context.Meetings
                                    orderby m.WardName
@@ -245,7 +305,8 @@ namespace SacramentMeetingPlanner.Controllers
         // meeting.
         private bool ValidateActivity(Activity activity, int meetingId) 
         {
-            if (activity.EventName != "Speaker" || activity.EventName != "Youth Speaker" || activity.EventName != "Article of Faith")
+            // First test, check to see if this is not a speaker.
+            if (activity.EventName != "Speaker" && activity.EventName != "Youth Speaker" && activity.EventName != "Article of Faith")
             {
 
                 // Test the Activity to see if others aready exsist in the DB in the same meeting.
@@ -261,6 +322,110 @@ namespace SacramentMeetingPlanner.Controllers
             }
             // If all checks out return false.
             return false;
+        }
+
+        // VALIDATE: Second Validation Check. This checks to see if the EventInfo is null when it needs to be.
+        private bool ValidateActivityInfo(Activity activity)
+        {
+            // Create a check to see if values in EventInfo that should be null are not null.
+            // Second Test, see if this object's info needs to be null.
+            if (activity.EventName == "Ward Buisness")
+            {
+                if (activity.EventInfo != null)
+                {
+                    // Test Failed return true.
+                    return false;
+                }
+            }
+
+            else if (activity.EventName == "Passing of the Sacrament")
+            {
+                if (activity.EventInfo != null)
+                {
+                    // Test Failed return true.
+                    return false;
+                }
+            }
+
+            else if (activity.EventName == "Testimonies")
+            {
+                if (activity.EventInfo != null)
+                {
+                    // Test Failed return true.
+                    return false;
+                }
+            }
+
+            // If we are ok send back a true because we passed!
+            return true;
+        }
+
+        // PRINT: Code for the Print page.
+        public async Task<IActionResult> Print(int printMeeting) 
+        {
+            var meeting = new Meeting();
+
+            if (_context.Meetings == null)
+            {
+                return Problem("Entity set 'MvcMovieContext.Meetings' is null.");
+            }
+
+            // Get the meeting.
+            foreach (Meeting m in _context.Meetings) 
+            {
+                if (m.Id == printMeeting) 
+                {
+                    meeting = m;
+                }
+            }
+
+            // Get the Activites.
+
+            var meetingActivities = new List<Activity>();
+
+            foreach (Activity a in _context.Activities) 
+            {
+                if(a.MeetingID == printMeeting) 
+                {
+                    meetingActivities.Add(a);
+                }
+            }
+
+            // Add the title of the meeting.
+            ViewData["MeetingWard"] = meeting.WardName;
+            if (printMeeting == 0) 
+            {
+                ViewData["MeetingDate"] = "";
+            }
+            else 
+            {
+                ViewData["MeetingDate"] = meeting.Date.ToShortDateString();
+            }
+            ViewData["MeetingAddress"] = meeting.Address;
+
+            // Create the meeting body, with dynamic views.
+            // Convert the list into the strings we need to use.
+            // This will also handle the order in which each thing will appear as well.
+            var meetingActivitiesString = new List<string>();
+
+            foreach (Activity ma in meetingActivities) 
+            {
+                // This varible is the character length. This is how long each string entry is going to be.
+                int length = 550;
+
+                // Now test if order is not 8, 9, 10, or 11. These need to be orginized in a special way.
+                if (ma.Order < 8 || ma.Order > 11) 
+                {
+                    // Create the padding length.
+                    if (ma.EventInfo != null)
+                    {
+                        int activityStringLen = ma.EventName.Length + ma.EventInfo.Length;
+                    }
+                }
+            }
+
+            PopulateMeetingsDropDownList();
+            return View();
         }
     }
 }

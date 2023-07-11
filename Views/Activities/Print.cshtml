@@ -1,0 +1,25 @@
+﻿@model SacramentMeetingPlanner.Models.Activity
+
+@{
+    ViewData["Title"] = "Print";
+}
+
+<h1>Print Meeting</h1>
+<form>
+    <div class="form-actions no-color">
+        <p>Meeting: <select asp-items="ViewBag.MeetingsID" name="printMeeting"></select></p>
+        <input type="submit" value="Search" class="btn btn-primary btn-spacing" />
+    </div>
+</form>
+
+<!--Printable data-->
+<div class="sacramentSheet">
+    <div class="meetingTop">
+        <h3>@ViewData["MeetingWard"]</h3>
+        <h3>@ViewData["MeetingDate"]</h3>
+        <h3>@ViewData["MeetingAddress"]</h3>
+    </div>
+    <div class="meetingBody">
+
+    </div>
+</div>

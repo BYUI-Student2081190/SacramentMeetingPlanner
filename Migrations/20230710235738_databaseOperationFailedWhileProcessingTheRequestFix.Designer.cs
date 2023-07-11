@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SacramentMeetingPlanner.Data;
 
@@ -11,9 +12,11 @@ using SacramentMeetingPlanner.Data;
 namespace SacramentMeetingPlanner.Migrations
 {
     [DbContext(typeof(ProgramContext))]
-    partial class SacramentContextModelSnapshot : ModelSnapshot
+    [Migration("20230710235738_databaseOperationFailedWhileProcessingTheRequestFix")]
+    partial class databaseOperationFailedWhileProcessingTheRequestFix
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -24,11 +27,11 @@ namespace SacramentMeetingPlanner.Migrations
 
             modelBuilder.Entity("SacramentMeetingPlanner.Models.Activity", b =>
                 {
-                    b.Property<int>("ActivityID")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ActivityID"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("EventFooter")
                         .HasMaxLength(150)
@@ -49,7 +52,7 @@ namespace SacramentMeetingPlanner.Migrations
                     b.Property<int>("Order")
                         .HasColumnType("int");
 
-                    b.HasKey("ActivityID");
+                    b.HasKey("Id");
 
                     b.ToTable("Activities");
                 });

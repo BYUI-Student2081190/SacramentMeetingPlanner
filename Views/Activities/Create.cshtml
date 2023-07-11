@@ -48,6 +48,7 @@
                 <label asp-for="EventInfo" class="control-label"></label>
                 <input asp-for="EventInfo" class="form-control" />
                 <span asp-validation-for="EventInfo" class="text-danger"></span>
+                <p class="text-danger">@ViewData["NullMessage"]</p>
             </div>
             <div class="form-group">
                 <label asp-for="EventFooter" class="control-label"></label>
