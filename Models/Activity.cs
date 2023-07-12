@@ -26,6 +26,8 @@ namespace SacramentMeetingPlanner.Models
         [Display(Name = "Event Footer")]
         public string? EventFooter { get; set; }
 
+        [Required]
+        [Display(Name = "Display Order")]
         public int Order { get; set; }
     }
 }

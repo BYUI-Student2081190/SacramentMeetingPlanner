@@ -1,10 +1,10 @@
-﻿@model SacramentMeetingPlanner.Models.Activity
+﻿﻿@model SacramentMeetingPlanner.Models.Activity
 
 @{
-    ViewData["Title"] = "View Program Details";
+    ViewData["Title"] = "Details";
 }
 
-<h1>View Program Details</h1>
+<h1>Details</h1>
 
 <div>
     <h4>Activity</h4>
@@ -39,6 +39,12 @@
         </dt>
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.EventFooter)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Order)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Order)
         </dd>
     </dl>
 </div>

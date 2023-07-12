@@ -1,7 +1,7 @@
-﻿@model SacramentMeetingPlanner.Models.Activity
+﻿﻿@model SacramentMeetingPlanner.Models.Activity
 
 @{
-    ViewData["Title"] = "Print Program";
+    ViewData["Title"] = "Print";
 }
 
 <h1>Print Meeting</h1>
@@ -20,15 +20,72 @@
         <h3>@ViewData["MeetingAddress"]</h3>
     </div>
     <div class="meetingBody">
-        @foreach (string activity in ViewBag.PrintList)
+        @foreach (Activity activity in ViewBag.PrintList)
         {
-            // Create divs to hold the h3 elements.
-            // Create a new h3 element per object in bag.
-            @:<div>
-                @:<h3>
-                    @activity
-                @:</h3>
-            @:</div>
+            // This varible is the character length. This is how long each string entry is going to be.
+            int length = 50;
+
+            // Create the padding length.
+            if (activity.EventInfo != null)
+            {
+                int activityStringLen = activity.EventName.Length + activity.EventInfo.Length;
+
+                // Now generate the padding.
+                int padding = length - activityStringLen;
+
+                string stringPad = new string('.', padding);
+
+                // Now Create Finished String.
+                string finishedString = (activity.EventName + " " + stringPad + " " + activity.EventInfo);
+
+                // Now put them into their own div.
+                // Test to see if they need to be displayed differently because of their eventName.
+                if (activity.EventName == "Speaker")
+                {
+                   @:<div>
+                        @:<h3>
+                            @finishedString
+                        @:</h3>
+                    @:</div> 
+                }
+                else if (activity.EventName == "Youth Speaker")
+                {
+                   @:<div>
+                        @:<h3>
+                            @finishedString
+                        @:</h3>
+                    @:</div> 
+                }
+                else
+                {
+                    @:<div>
+                        @:<h3>
+                            @finishedString
+                        @:</h3>
+                        @:<h3>
+                            @activity.EventFooter
+                        @:</h3>
+                    @:</div>
+                }
+            }
+
+            // If they are null, have the footer be a combo with the EventName on a new line.
+            else
+            {
+                // Create a string with the footer.
+                string finishedString = ($"{activity.EventName}");
+
+                // Now add them to their own div.
+
+                @:<div>
+                    @:<h3>
+                        @finishedString
+                    @:</h3>
+                    @:<h3>
+                        @activity.EventFooter
+                    @:</h3>
+                @:</div>
+            }
         }
     </div>
 </div>
