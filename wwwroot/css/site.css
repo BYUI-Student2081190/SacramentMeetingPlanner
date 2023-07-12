@@ -26,6 +26,10 @@ h1 {
     font-family: 'Lora', serif;
 }
 
+.form-topper{
+    margin-top:1em;
+}
+
 @media (min-width: 768px) {
     html {
         font-size: 16px;
@@ -79,4 +83,72 @@ div.home_pg a {
 
 .nav-link:visited {
     color: #59554C;
+}
+
+label{
+    margin-top: 1.5em;
+}
+
+.btn {
+    background-color: #798C8C;
+    margin-top: .5em;
+    color: #F2EFDF;
+}
+
+    .btn:hover {
+        background-color: #F2EFDF;
+        color: #798C8C;
+        border: 2px solid #798C8C;
+    }
+
+div.formA {
+    margin-top: .5em;
+     
+}
+
+a:hover {
+    color: #59554C;
+    font-weight: 700;
+}
+
+a {
+    text-decoration: none;
+    font-family: 'Montserrat', sans-serif;
+}
+/*Print Page*/
+
+div.sacramentSheet div{
+    text-align: center;
+
+}
+
+div.sacramentSheet {
+    background-color: #fff;
+    border: 2px solid #000000;
+    color: #000000;
+    width: 50%;
+    margin: auto;
+}
+
+.wardInfo {
+    font-size: 12px;
+    margin: .25em;
+}
+
+.wardName {
+    font-size: 18px;
+    margin-top: .5em;
+    margin-bottom: -0.05em
+}
+
+.meetingBody h3 {
+    font-size: 16px;
+}
+
+div.meetingBody {
+    padding: 0.5em 0;
+}
+
+div.sacramentSheet div.meetingBody div {
+    padding: .5em 0
 }

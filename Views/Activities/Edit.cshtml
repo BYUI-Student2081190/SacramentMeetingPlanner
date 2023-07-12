@@ -2,12 +2,11 @@
 @model SacramentMeetingPlanner.Models.Activity
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Edit Agenda";
 }
 
-<h1>Edit</h1>
+<h1 class="form-topper">Edit the Agenda</h1>
 
-<h4>Activity</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -63,13 +62,13 @@
                 <span asp-validation-for="Order" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                <input type="submit" value="Save" class="btn" />
             </div>
         </form>
     </div>
 </div>
 
-<div>
+<div class="formA">
     <a asp-action="Index">Back to List</a>
 </div>
 
