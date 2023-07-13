@@ -25,7 +25,14 @@ namespace SacramentMeetingPlanner.Controllers
         public async Task<IActionResult> Index()
         {
             // Populate Viewbag, that way you can see what ward that person is a part of.
-            PopulateMeetingsDropDownList();
+            var meetingList = new List<Meeting>();
+
+            foreach (Meeting m in _context.Meetings) 
+            {
+                meetingList.Add(m);
+            }
+
+            ViewBag.Wards = meetingList;
 
             return _context.Activities != null ?
                         View(await _context.Activities.ToListAsync()) :

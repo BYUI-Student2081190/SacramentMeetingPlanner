@@ -13,28 +13,36 @@
     <thead>
         <tr>
             <th>
+                Ward
+            </th>
+            <th>
                 @Html.DisplayNameFor(model => model.EventName)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.EventInfo)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.EventFooter)
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
 @foreach (var item in Model) {
-        <tr>
+        <tr>                   
+            @foreach(Meeting w in ViewBag.Wards)
+                {
+                    if(w.Id == item.MeetingID)
+                    {
+                        @:<td>
+                            @w.WardName
+                        @:</td>
+                        // Break the loop so you dont get stuck inside.
+                        break;
+                    }
+                }
             <td>
                 @Html.DisplayFor(modelItem => item.EventName)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.EventInfo)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.EventFooter)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.ActivityID">Edit</a> |
