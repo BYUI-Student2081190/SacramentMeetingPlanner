@@ -297,7 +297,7 @@ namespace SacramentMeetingPlanner.Controllers
                     int thatId = 0;
                     foreach (Activity a in _context.Activities)
                     {
-                        if (a.EventName == activity.EventName)
+                        if (a.EventName == activity.EventName && a.ActivityID == id)
                         {
                             countActivity += 1;
                             thatId = a.ActivityID;
