@@ -128,7 +128,13 @@ div.sacramentSheet {
     color: #000000;
     width: 50%;
     margin: auto;
+    display: none;
 }
+
+div.sacramentSheet.printShow {
+    display: revert;
+}
+
 
 .wardInfo {
     font-size: 12px;

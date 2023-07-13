@@ -24,6 +24,9 @@ namespace SacramentMeetingPlanner.Controllers
         // GET: Activities
         public async Task<IActionResult> Index()
         {
+            // Populate Viewbag, that way you can see what ward that person is a part of.
+            PopulateMeetingsDropDownList();
+
             return _context.Activities != null ?
                         View(await _context.Activities.ToListAsync()) :
                         Problem("Entity set 'ProgramContext.Activities'  is null.");
@@ -50,11 +53,6 @@ namespace SacramentMeetingPlanner.Controllers
                 {
                     ViewData["ViewWard"] = m.WardName;
                     ViewData["MeetingDate"] = m.Date.ToShortDateString();
-                }
-                else
-                {
-                    ViewData["ViewWard"] = "None";
-                    ViewData["MeetingDate"] = "None";
                 }
             }
 
@@ -358,9 +356,17 @@ namespace SacramentMeetingPlanner.Controllers
         }
 
         // PRINT: Code for the Print page.
-        public async Task<IActionResult> Print(int printMeeting)
+        public async Task<IActionResult> Print(int? printMeeting = null)
         {
             var meeting = new Meeting();
+
+            // Set a value to print meeting to trigger the class that will stop the div
+            // from showing until printmeeting != null.
+
+            if (printMeeting != null) 
+            {
+                ViewData["printMeetingShow"] = "printShow";
+            }
 
             if (_context.Meetings == null)
             {

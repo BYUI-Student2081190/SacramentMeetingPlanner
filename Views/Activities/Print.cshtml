@@ -14,7 +14,8 @@
 </form>
 
 <!--Printable data-->
-<div class="sacramentSheet">
+<!--This blank class will only get populated when the user presses search.-->
+<div class="sacramentSheet @ViewData["printMeetingShow"]">
     <div class="meetingTop">
         <h3 class="wardName">@ViewData["MeetingWard"]</h3>
         <h3 class="wardInfo">@ViewData["MeetingAddress"]</h3>
